@@ -52,9 +52,11 @@ source modules/probe.sh
 source modules/deb.sh
 source modules/testscfg.sh
 source modules/grub.sh
+source modules/misc.sh
 
 # The mender_convert_config is always used and provides all the defaults
 declare -a configs=("configs/mender_convert_config")
+declare -a overlays=()
 
 while (("$#")); do
     case "$1" in
@@ -284,6 +286,8 @@ for overlay in "${overlays[@]}"; do
     log_info "Applying rootfs overlay: ${overlay}"
     run_and_log_cmd "sudo rsync --archive --keep-dirlinks --verbose ${overlay}/ work/rootfs/"
 done
+
+check_and_merge_mender_configs
 
 log_info "Performing overlay specific modifications (if any)"
 for hook in "${OVERLAY_MODIFY_HOOKS[@]}"; do
